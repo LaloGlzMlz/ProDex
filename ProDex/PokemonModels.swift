@@ -86,6 +86,11 @@ struct OtherSprites: Decodable {
 struct OfficialArtworkSprites: Decodable {
     let frontDefault: URL?
     let frontShiny: URL?
+    
+    private enum CodingKeys: String, CodingKey {
+        case frontDefault = "front_default"
+        case frontShiny = "front_shiny"
+    }
 }
 
 struct StatValues: Decodable {
