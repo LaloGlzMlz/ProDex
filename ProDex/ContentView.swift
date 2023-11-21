@@ -7,17 +7,69 @@
 
 import SwiftUI
 
+
 struct ContentView: View {
+    @StateObject private var pokemonService = PokemonService()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        let columnLayout = Array(repeating: GridItem(), count: 6)
+        
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: columnLayout) {
+                    ForEach(1..<152) { id in
+                        NavigationLink(destination: PokemonDetailView(pokemonId: id)) {
+                            if let image = pokemonService.pokemonImages[id - 1] {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(1.0, contentMode: ContentMode.fit)
+                            } else {
+                                ProgressView()
+                                    .frame(width: 100, height: 100)
+                                    .padding(5)
+                                    .onAppear {
+                                        // Load Pokémon image only if it hasn't been loaded yet
+                                        if pokemonService.pokemonImages[id - 1] == nil {
+                                            pokemonService.fetchPokemonImage(id: id)
+                                        }
+                                    }
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Pokédex")
+                .padding()
+            }
+            .onAppear {
+                // Load all Pokémon images when the view appears
+                for id in 1..<152 {
+                    pokemonService.fetchPokemonImage(id: id)
+                }
+            }
+        }.onAppear {
+            // Call the function to fetch Pokemon details when the view appears
+            pokemonService.fetchPokemonDetails { result in
+                switch result {
+                case .success(let pokemonDetails):
+                    // Handle the PokemonDetails object here
+                    print("Pokemon ID: \(pokemonDetails.id)")
+                    print("Pokemon Name: \(pokemonDetails.name)")
+                    
+                    for stat in pokemonDetails.stats {
+                        print("Stat Name: \(stat.stat.name)")
+                        print("Base Stat: \(stat.baseStat)")
+                    }
+                    
+                    // Access other properties as needed
+                case .failure(let error):
+                    // Handle the error here
+                    print("Error fetching Pokemon details: \(error)")
+                }
+            }
         }
-        .padding()
     }
 }
+
 
 #Preview {
     ContentView()
