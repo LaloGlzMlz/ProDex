@@ -46,26 +46,6 @@ struct ContentView: View {
                     pokemonService.fetchPokemonImage(id: id)
                 }
             }
-        }.onAppear {
-            // Call the function to fetch Pokemon details when the view appears
-            pokemonService.fetchPokemonDetails { result in
-                switch result {
-                case .success(let pokemonDetails):
-                    // Handle the PokemonDetails object here
-                    print("Pokemon ID: \(pokemonDetails.id)")
-                    print("Pokemon Name: \(pokemonDetails.name)")
-                    
-                    for stat in pokemonDetails.stats {
-                        print("Stat Name: \(stat.stat.name)")
-                        print("Base Stat: \(stat.baseStat)")
-                    }
-                    
-                    // Access other properties as needed
-                case .failure(let error):
-                    // Handle the error here
-                    print("Error fetching Pokemon details: \(error)")
-                }
-            }
         }
     }
 }
