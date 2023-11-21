@@ -1,72 +1,85 @@
-//
-//  PokemonDetailView.swift
-//  ProDex
-//
-//  Created by Eduardo Gonzalez Melgoza on 16/11/23.
-//
-
 import SwiftUI
+
+class PokemonDetailViewModel: ObservableObject {
+    @Published var pokemonDetails: PokemonDetails?
+    
+    func fetchPokemonDetails(for id: Int) {
+        PokemonService().fetchPokemonDetails(for: id) { result in
+            switch result {
+            case .success(let details):
+                self.pokemonDetails = details
+                
+            case .failure(let error):
+                // Handle the error here
+                print("Error fetching Pokemon details: \(error)")
+            }
+        }
+    }
+}
 
 struct PokemonDetailView: View {
     let pokemonId: Int
-    @StateObject private var pokemonService = PokemonService()
+    @ObservedObject private var viewModel = PokemonDetailViewModel()
+    @ObservedObject private var pokemonService = PokemonService()
     
-    // Properties to store fetched details
-    @State private var pokemonName: String?
-    @State private var pokemonHeight: Int?
-    @State private var pokemonWeight: Int?
-
     var body: some View {
         ScrollView {
             VStack {
-                if let image = pokemonService.pokemonImages[pokemonId - 1] {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ProgressView()
-                        .frame(width: 100, height: 100)
-                        .padding(5)
-                        .onAppear {
-                            // Load Pokémon image if it hasn't been loaded yet
-                            if pokemonService.pokemonImages[pokemonId - 1] == nil {
-                                pokemonService.fetchPokemonImage(id: pokemonId)
-                            }
+                
+                // Official Artwork
+                if let officialArtworkURL = viewModel.pokemonDetails?.sprites.other.officialArtwork.frontDefault {
+                    AsyncImage(url: officialArtworkURL) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity, maxHeight: 280) // Adjust the frame size as needed
+                        case .failure:
+                            Image(systemName: "pkball") // Placeholder image for failure
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity, maxHeight: 280) // Adjust the frame size as needed
                         }
-                }
+                    }
+                } // Official Artwork ends
                 
                 // Display fetched details
-                if let name = pokemonName, let height = pokemonHeight, let weight = pokemonWeight {
-                    Text("Name: \(name)")
-                    Text("Height: \(height)")
-                    Text("Weight: \(weight)")
+                if let details = viewModel.pokemonDetails {
+                    Text("ID: \(pokemonId)")
+                    Text("Name: \(details.name)")
+                    Text("Height: \(details.height)")
+                    Text("Weight: \(details.weight)")
                 }
             }
-        }.toolbar {
+        }
+        .toolbar {
             ToolbarItem(placement: .principal) {
-                if let image = pokemonService.pokemonImages[pokemonId - 1] {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
+                // frontDefault sprite
+                if let officialArtworkURL = viewModel.pokemonDetails?.sprites.frontDefault {
+                    AsyncImage(url: officialArtworkURL) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        case .failure:
+                            Image(systemName: "pkball") // Placeholder image for failure
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity, maxHeight: 280) // Adjust the frame size as needed
+                        }
+                    }
                 }
             }
         }
         .onAppear {
             // Call the function to fetch Pokemon details when the view appears
-            pokemonService.fetchPokemonDetails(for: pokemonId) { result in
-                switch result {
-                    case .success(let pokemonDetails):
-                        // Extract details and update state
-                        pokemonName = pokemonDetails.name
-                        pokemonHeight = pokemonDetails.height
-                        pokemonWeight = pokemonDetails.weight
-
-                    case .failure(let error):
-                        // Handle the error here
-                        print("Error fetching Pokemon details: \(error)")
-                }
-            }
+            viewModel.fetchPokemonDetails(for: pokemonId)
         }
     }
 }
