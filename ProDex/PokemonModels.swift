@@ -67,10 +67,20 @@ struct PokemonSprites: Decodable {
     let frontDefault: URL?
     let frontShiny: URL?
     let other: OtherSprites
+
+    private enum CodingKeys: String, CodingKey {
+        case frontDefault = "front_default"
+        case frontShiny = "front_shiny"
+        case other
+    }
 }
 
 struct OtherSprites: Decodable {
     let officialArtwork: OfficialArtworkSprites
+
+    private enum CodingKeys: String, CodingKey {
+        case officialArtwork = "official-artwork"
+    }
 }
 
 struct OfficialArtworkSprites: Decodable {

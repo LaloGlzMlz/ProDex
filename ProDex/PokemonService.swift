@@ -28,18 +28,9 @@ class PokemonService: ObservableObject {
             }
             .store(in: &cancellables)
     }
-
     
-    struct APIResponse: Decodable {
-        let id: Int
-        let name: String
-        let types: [TypeDetails]
-        let stats: [StatValues]
-        let abilities: [AbilityDetails]
-    }
-    
-    func fetchPokemonDetails(completion: @escaping (Result<APIResponse, Error>) -> Void) {
-        let apiUrl = URL(string: "https://pokeapi.co/api/v2/pokemon/6")!
+    func fetchPokemonDetails(for id: Int, completion: @escaping (Result<PokemonDetails, Error>) -> Void) {
+        let apiUrl = URL(string: "https://pokeapi.co/api/v2/pokemon/\(id)")!
         URLSession.shared.dataTask(with: apiUrl) { data, response, error in
             if let error = error {
                 completion(.failure(error))
@@ -52,10 +43,10 @@ class PokemonService: ObservableObject {
             }
 
             do {
-                // Use JSONDecoder to decode the data into the APIResponse model
+                // Use JSONDecoder to decode the data into the PokemonDetails model
                 let decoder = JSONDecoder()
-                let apiResponse = try decoder.decode(APIResponse.self, from: data)
-                completion(.success(apiResponse))
+                let pokemonDetails = try decoder.decode(PokemonDetails.self, from: data)
+                completion(.success(pokemonDetails))
             } catch {
                 completion(.failure(error))
             }

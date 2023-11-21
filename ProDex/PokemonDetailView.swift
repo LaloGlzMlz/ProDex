@@ -10,6 +10,11 @@ import SwiftUI
 struct PokemonDetailView: View {
     let pokemonId: Int
     @StateObject private var pokemonService = PokemonService()
+    
+    // Properties to store fetched details
+    @State private var pokemonName: String?
+    @State private var pokemonHeight: Int?
+    @State private var pokemonWeight: Int?
 
     var body: some View {
         ScrollView {
@@ -30,6 +35,13 @@ struct PokemonDetailView: View {
                             }
                         }
                 }
+                
+                // Display fetched details
+                if let name = pokemonName, let height = pokemonHeight, let weight = pokemonWeight {
+                    Text("Name: \(name)")
+                    Text("Height: \(height)")
+                    Text("Weight: \(weight)")
+                }
             }
         }.toolbar {
             ToolbarItem(placement: .principal) {
@@ -40,30 +52,22 @@ struct PokemonDetailView: View {
                 }
             }
         }
-        
-        
-        
-        /*.onAppear {
+        .onAppear {
             // Call the function to fetch Pokemon details when the view appears
-            pokemonService.fetchPokemonDetails { result in
+            pokemonService.fetchPokemonDetails(for: pokemonId) { result in
                 switch result {
-                case .success(let pokemonDetails):
-                    // Handle the PokemonDetails object here
-                    print("Pokemon ID: \(pokemonDetails.id)")
-                    print("Pokemon Name: \(pokemonDetails.name)")
-                    
-                    for stat in pokemonDetails.stats {
-                        print("Stat Name: \(stat.stat.name)")
-                        print("Base Stat: \(stat.baseStat)")
-                    }
-                    
-                    // Access other properties as needed
-                case .failure(let error):
-                    // Handle the error here
-                    print("Error fetching Pokemon details: \(error)")
+                    case .success(let pokemonDetails):
+                        // Extract details and update state
+                        pokemonName = pokemonDetails.name
+                        pokemonHeight = pokemonDetails.height
+                        pokemonWeight = pokemonDetails.weight
+
+                    case .failure(let error):
+                        // Handle the error here
+                        print("Error fetching Pokemon details: \(error)")
                 }
             }
-        }*/
+        }
     }
 }
 
