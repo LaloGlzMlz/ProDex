@@ -1,13 +1,14 @@
 import SwiftUI
 
 struct PokemonDetailView: View {
-    @State private var currentProgressHP: CGFloat = 0.0
-    @State private var currentProgressATK: CGFloat = 0.0
-    @State private var currentProgressDEF: CGFloat = 0.0
-    @State private var currentProgressSATK: CGFloat = 0.0
-    @State private var currentProgressSDEF: CGFloat = 0.0
-    @State private var currentProgressSPE: CGFloat = 0.0
-    @State private var currentProgressTOT: CGFloat = 0.0
+    @State private var currentProgressHP: CGFloat = 0.43
+    @State private var currentProgressATK: CGFloat = 0.44
+    @State private var currentProgressDEF: CGFloat = 0.43
+    @State private var currentProgressSATK: CGFloat = 0.48
+    @State private var currentProgressSDEF: CGFloat = 0.44
+    @State private var currentProgressSPE: CGFloat = 0.47
+    @State private var currentProgressTOT: CGFloat = 0.89
+    let multiplier: CGFloat = 100
     let pokemonId: Int
     @ObservedObject private var viewModel = PokemonDetailViewModel()
     @ObservedObject private var pokemonService = PokemonService()
@@ -15,27 +16,43 @@ struct PokemonDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
+                ZStack{
+                    GeometryReader { geometry in
+                        Rectangle()
+                            .fill(LinearGradient(
+                                gradient: Gradient(stops: [
+                                    .init(color: Color.red.opacity(1.0), location: 0.0),
+                                    .init(color: Color.red.opacity(0.0), location: 1.0)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                                ))
+                            .frame(width: geometry.size.width, height: 200) // Adjust the size of the square as needed
+                            .offset(y: -40)
+                    }.ignoresSafeArea()
+                    
+                    // Official Artwork
+                    if let officialArtworkURL = viewModel.pokemonDetails?.sprites.other.officialArtwork.frontDefault {
+                        AsyncImage(url: officialArtworkURL) { phase in
+                            switch phase {
+                                case .empty:
+                                    ProgressView()
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: .infinity, maxHeight: 350) // Adjust the frame size as needed
+                                case .failure:
+                                    Image(systemName: "pkball") // Placeholder image for failure
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: .infinity, maxHeight: 280) // Adjust the frame size as needed
+                            }
+                        }.offset(y: -45) // Adjust the value as needed
+                    } // Official Artwork ends
+                }
                 
-                // Official Artwork
-                if let officialArtworkURL = viewModel.pokemonDetails?.sprites.other.officialArtwork.frontDefault {
-                    AsyncImage(url: officialArtworkURL) { phase in
-                        switch phase {
-                            case .empty:
-                                ProgressView()
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity, maxHeight: 350) // Adjust the frame size as needed
-                            case .failure:
-                                Image(systemName: "pkball") // Placeholder image for failure
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: .infinity, maxHeight: 280) // Adjust the frame size as needed
-                        }
-                    }.offset(y: -45) // Adjust the value as needed
-                } // Official Artwork ends
-                VStack(alignment: .leading){
+                VStack(alignment: .leading) {
                     // Display fetched details
                     if let details = viewModel.pokemonDetails {
                         
@@ -102,14 +119,119 @@ struct PokemonDetailView: View {
                             .padding(.bottom, 0.5)
                             .padding(.leading, 20)
                             .padding(.trailing, 20)
-                        VStack {
+                        VStack(alignment: .leading) {
                             HStack {
                                 Text("HP")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                Spacer()
+                                Text("\(Int(currentProgressHP * multiplier))")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.gray))
+                                Spacer()
                                 ProgressBarView(progress: $currentProgressHP)
                                     .frame(height: 25)
-                            }.padding()
+                            }
+                                .padding(.top, 5)
+                                .padding(.bottom, 0.5)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
+                            HStack {
+                                Text("ATK")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.fire))
+                                Spacer()
+                                Text("\(Int(currentProgressATK * multiplier))")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.gray))
+                                Spacer()
+                                ProgressBarView(progress: $currentProgressATK)
+                                    .frame(height: 25)
+                            }
+                                .padding(.top, 5)
+                                .padding(.bottom, 0.5)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
+                            HStack {
+                                Text("DEF")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.fire))
+                                Spacer()
+                                Text("\(Int(currentProgressDEF * multiplier))")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.gray))
+                                Spacer()
+                                ProgressBarView(progress: $currentProgressDEF)
+                                    .frame(height: 25)
+                            }
+                                .padding(.top, 5)
+                                .padding(.bottom, 0.5)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
+                            HStack {
+                                Text("SATK")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.fire))
+                                Spacer()
+                                Text("\(Int(currentProgressATK * multiplier))")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.gray))
+                                Spacer()
+                                ProgressBarView(progress: $currentProgressSATK)
+                                    .frame(height: 25)
+                            }
+                                .padding(.top, 5)
+                                .padding(.bottom, 0.5)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
+                            HStack {
+                                Text("SDEF")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.fire))
+                                Spacer()
+                                Text("\(Int(currentProgressDEF * multiplier))")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.gray))
+                                Spacer()
+                                ProgressBarView(progress: $currentProgressSDEF)
+                                    .frame(height: 25)
+                            }
+                                .padding(.top, 5)
+                                .padding(.bottom, 0.5)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
+                            HStack {
+                                Text("SPE")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.fire))
+                                Spacer()
+                                Text("\(Int(currentProgressSPE * multiplier))")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.gray))
+                                Spacer()
+                                ProgressBarView(progress: $currentProgressSPE)
+                                    .frame(height: 25)
+                            }
+                                .padding(.top, 5)
+                                .padding(.bottom, 0.5)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
+                            HStack {
+                                Text("TOT")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.fire))
+                                Spacer()
+                                Text("\(Int(currentProgressTOT * multiplier))")
+                                    .font(.system(size: 20)).bold()
+                                    .foregroundColor(Color(.gray))
+                                Spacer()
+                                ProgressBarView(progress: $currentProgressTOT)
+                                    .frame(height: 25)
+                            }
+                                .padding(.top, 5)
+                                .padding(.bottom, 0.5)
+                                .padding(.leading, 20)
+                                .padding(.trailing, 20)
                         }
                     }
                 }.offset(y: -60)
