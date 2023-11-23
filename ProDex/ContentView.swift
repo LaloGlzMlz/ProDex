@@ -17,7 +17,7 @@ struct ContentView: View {
         NavigationView {
             ScrollView {
                 LazyVGrid(columns: columnLayout) {
-                    ForEach(1..<152) { id in
+                    ForEach(1..<650) { id in
                         NavigationLink(destination: PokemonDetailView(pokemonId: id)) {
                             if let image = pokemonService.pokemonImages[id - 1] {
                                 Image(uiImage: image)
