@@ -33,22 +33,25 @@ struct PokemonDetailView: View {
                     
                     // Official Artwork
                     if let officialArtworkURL = viewModel.pokemonDetails?.sprites.other.officialArtwork.frontDefault {
-                        AsyncImage(url: officialArtworkURL) { phase in
-                            switch phase {
-                                case .empty:
-                                    ProgressView()
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(maxWidth: .infinity, maxHeight: 350) // Adjust the frame size as needed
-                                case .failure:
-                                    Image(systemName: "pkball") // Placeholder image for failure
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(maxWidth: .infinity, maxHeight: 280) // Adjust the frame size as needed
+                        if let details = viewModel.pokemonDetails {
+                            AsyncImage(url: officialArtworkURL) { phase in
+                                switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(maxWidth: .infinity, maxHeight: 350)
+                                    case .failure:
+                                        Image(systemName: "pkball") // Placeholder image for failure
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(maxWidth: .infinity, maxHeight: 280) // Adjust the frame size as needed
+                                }
                             }
-                        }.offset(y: -45) // Adjust the value as needed
+                            .offset(y: -45)
+                        }
                     } // Official Artwork ends
                 }
                 
@@ -63,11 +66,13 @@ struct PokemonDetailView: View {
                             .padding(.bottom, 1)
                             .padding(.leading, 20)
                             .padding(.trailing, 20)
+                            .accessibility(label: Text("Image of Pokémon \(details.name). Pokémon I.D. number \(details.id)"))
                         Text(details.name.capitalized)
                             .font(.system(size: 40).bold())
                             .padding(.bottom, 13)
                             .padding(.leading, 20)
                             .padding(.trailing, 20)
+                            .accessibility(label: Text("Pokémon name \(details.name)"))
                         HStack{
                             ZStack {
                                 Capsule()
@@ -81,6 +86,7 @@ struct PokemonDetailView: View {
                                             .resizable()
                                             .frame(width: 33,height: 33)
                                             .offset(x: -38)
+                                            .accessibilityHidden(true)
                                     )
                                     .overlay(
                                         Text("Fire")
@@ -90,6 +96,7 @@ struct PokemonDetailView: View {
                                             .frame(maxWidth: .infinity)
                                             .padding(.leading, 20)
                                             .offset(x: 7)
+                                            .accessibility(label: Text("Pokémon primary type: Fire"))
                                 )
                             }
                             Capsule()
@@ -103,6 +110,7 @@ struct PokemonDetailView: View {
                                         .resizable()
                                         .frame(width: 33,height: 33)
                                         .offset(x: -49)
+                                        .accessibilityHidden(true)
                                 )
                                 .overlay(
                                     Text("Flying")
@@ -111,6 +119,7 @@ struct PokemonDetailView: View {
                                         .multilineTextAlignment(.center)
                                         .frame(maxWidth: .infinity)
                                         .offset(x: 10)
+                                        .accessibility(label: Text("Pokémon secondary type: Fire"))
                                 )
                         }
                         Text("Stats")
@@ -124,6 +133,7 @@ struct PokemonDetailView: View {
                                 Text("HP")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                    .accessibility(label: Text("H.P."))
                                 Spacer()
                                 Text("\(Int(currentProgressHP * multiplier))")
                                     .font(.system(size: 20)).bold()
@@ -140,6 +150,7 @@ struct PokemonDetailView: View {
                                 Text("ATK")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                    .accessibility(label: Text("Attack"))
                                 Spacer()
                                 Text("\(Int(currentProgressATK * multiplier))")
                                     .font(.system(size: 20)).bold()
@@ -156,6 +167,7 @@ struct PokemonDetailView: View {
                                 Text("DEF")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                    .accessibility(label: Text("Defense"))
                                 Spacer()
                                 Text("\(Int(currentProgressDEF * multiplier))")
                                     .font(.system(size: 20)).bold()
@@ -172,6 +184,7 @@ struct PokemonDetailView: View {
                                 Text("SATK")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                    .accessibility(label: Text("Special Attack"))
                                 Spacer()
                                 Text("\(Int(currentProgressATK * multiplier))")
                                     .font(.system(size: 20)).bold()
@@ -188,6 +201,7 @@ struct PokemonDetailView: View {
                                 Text("SDEF")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                    .accessibility(label: Text("Special defense"))
                                 Spacer()
                                 Text("\(Int(currentProgressDEF * multiplier))")
                                     .font(.system(size: 20)).bold()
@@ -204,6 +218,7 @@ struct PokemonDetailView: View {
                                 Text("SPE")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                    .accessibility(label: Text("Speed"))
                                 Spacer()
                                 Text("\(Int(currentProgressSPE * multiplier))")
                                     .font(.system(size: 20)).bold()
@@ -220,6 +235,7 @@ struct PokemonDetailView: View {
                                 Text("TOT")
                                     .font(.system(size: 20)).bold()
                                     .foregroundColor(Color(.fire))
+                                    .accessibility(label: Text("Total"))
                                 Spacer()
                                 Text("\(Int(currentProgressTOT * multiplier))")
                                     .font(.system(size: 20)).bold()

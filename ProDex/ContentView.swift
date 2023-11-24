@@ -23,6 +23,7 @@ struct ContentView: View {
                                 Image(uiImage: image)
                                     .resizable()
                                     .aspectRatio(1.0, contentMode: ContentMode.fit)
+                                    .accessibility(label: Text("Pokémon number \(id)"))
                             } else {
                                 ProgressView()
                                     .frame(width: 100, height: 100)
